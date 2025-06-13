@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-commerce Platform — Portfolio Project</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Poppins:wght@400;600&family=Montserrat:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        /* CSS Reset & Global Styles */
+        :root {
+            --primary-color: #ff1c1c;
+            --secondary-color: #ffffff;
+            --background-color: #000000;
+            --glow-shadow: 0 0 15px rgba(255, 28, 28, 0.75);
+            --white-glow-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--background-color);
+            color: var(--secondary-color);
+            font-family: 'Poppins', sans-serif;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Typography */
+        h1, h2, h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-shadow: var(--glow-shadow);
+        }
+
+        h1 {
+            font-size: 4rem;
+            font-weight: 900;
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        p {
+            line-height: 1.7;
+            color: var(--secondary-color);
+        }
+
+        a {
+            color: var(--secondary-color);
+            text-decoration: none;
+            transition: color 0.3s ease, text-shadow 0.3s ease;
+        }
+
+        a:hover {
+            color: var(--primary-color);
+            text-shadow: var(--glow-shadow);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        section {
+            padding: 6rem 0;
+            animation: fadeIn 1s ease-out forwards;
+            opacity: 0;
+            animation-delay: calc(var(--order) * 150ms);
+        }
+
+        /* Hero Section */
+        .hero {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            min-height: 100vh;
+            flex-direction: column;
+        }
+
+        .hero__subtitle {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.5rem;
+            color: var(--secondary-color);
+            margin: 1rem 0 1.5rem;
+        }
+
+        .hero__description {
+            max-width: 600px;
+            margin-bottom: 2.5rem;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 1rem 2.5rem;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+            background-color: transparent;
+            border: 2px solid var(--primary-color);
+            border-radius: 5px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: color 0.4s ease, box-shadow 0.4s ease, transform 0.4s ease;
+        }
+
+        .cta-button:hover {
+            color: var(--secondary-color);
+            box-shadow: var(--glow-shadow);
+            transform: scale(1.05);
+            border-color: var(--primary-color);
+        }
+
+        /* Feature List Section */
+        .features__grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            text-align: left;
+        }
+
+        .feature-item {
+            background: #111;
+            padding: 2rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .feature-item:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(255, 28, 28, 0.2);
+        }
+
+        .feature-item h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Screenshot Showcase Section */
+        .showcase__grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .screenshot-placeholder {
+            height: 250px;
+            background-color: #1a1a1a;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Montserrat', sans-serif;
+            color: #555;
+            border: 2px dashed #333;
+            transition: transform 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease;
+        }
+
+        .screenshot-placeholder:hover {
+            transform: scale(1.05);
+            box-shadow: var(--white-glow-shadow);
+            border-color: var(--secondary-color);
+        }
+
+        /* Tech Stack Section */
+        .tech-stack__grid {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+
+        .tech-icon {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1rem;
+            transition: transform 0.3s ease, color 0.3s ease, text-shadow 0.3s ease;
+        }
+        
+        .tech-icon:hover {
+            transform: scale(1.1);
+            color: var(--primary-color);
+            text-shadow: var(--glow-shadow);
+        }
+
+        .tech-icon .icon-placeholder {
+            width: 80px;
+            height: 80px;
+            background: #111;
+            border-radius: 50%;
+            border: 2px solid #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            font-weight: bold;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .tech-icon:hover .icon-placeholder {
+            border-color: var(--primary-color);
+            box-shadow: var(--glow-shadow);
+        }
+
+        /* About the Developer Section */
+        .about {
+            background-color: #0a0a0a;
+            border-top: 1px solid #222;
+            border-bottom: 1px solid #222;
+        }
+        
+        .about-content {
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .about-content h2 {
+            margin-bottom: 1rem;
+        }
+        
+        .about-content p {
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .about-content .email {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+        }
+
+        /* Social Links */
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .social-links a {
+            font-size: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .social-links a:hover {
+            transform: scale(1.2);
+            color: var(--primary-color);
+        }
+
+        /* Footer Section */
+        footer {
+            text-align: center;
+            padding: 3rem 0;
+            border-top: 1px solid #1a1a1a;
+        }
+        
+        footer .footer-name {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 3rem;
+            }
+
+            h2 {
+                font-size: 2rem;
+            }
+
+            section {
+                padding: 4rem 0;
+            }
+        }
+        
+        @media (max-width: 480px) {
+             .container {
+                padding: 0 1rem;
+            }
+
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero__subtitle {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="hero" style="--order: 1;">
+        <div class="container">
+            <h1>E-commerce Platform</h1>
+            <p class="hero__subtitle">Full Stack React & Node.js Project</p>
+            <p class="hero__description">
+                A complete e-commerce solution featuring a sleek user interface built with React.js and a robust backend powered by Node.js and Express.js. It includes user authentication, a shopping cart system, payment gateway integration, and an admin dashboard for full control.
+            </p>
+            <a href="https://github.com/Porom143" target="_blank" class="cta-button">View GitHub</a>
+        </div>
+    </header>
+
+    <main>
+        <section class="features" style="--order: 2;">
+            <div class="container">
+                <h2>Key Features</h2>
+                <div class="features__grid">
+                    <div class="feature-item">
+                        <h3>🔑 User Authentication</h3>
+                        <p>Secure JWT-based authentication for user registration and login, ensuring data privacy and a personalized experience.</p>
+                    </div>
+                    <div class="feature-item">
+                        <h3>🛒 Dynamic Cart System</h3>
+                        <p>A fully functional shopping cart that allows users to add, remove, and update product quantities in real-time.</p>
+                    </div>
+                    <div class="feature-item">
+                        <h3>💳 Payment Integration</h3>
+                        <p>Seamlessly integrated with leading payment gateways to provide a secure and reliable checkout process.</p>
+                    </div>
+                    <div class="feature-item">
+                        <h3>⚙️ Admin Dashboard</h3>
+                        <p>A comprehensive admin panel for product management, order tracking, and user administration.</p>
+                    </div>
+                     <div class="feature-item">
+                        <h3>📱 Responsive UI</h3>
+                        <p>The entire platform is built with a mobile-first approach, ensuring a perfect user experience on any device.</p>
+                    </div>
+                     <div class="feature-item">
+                        <h3>🚀 Full Stack Power</h3>
+                        <p>Leverages the power of the MERN stack for a high-performance, scalable, and modern web application.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="showcase" style="--order: 3;">
+            <div class="container">
+                <h2>Screenshot Showcase</h2>
+                <div class="showcase__grid">
+                    <div class="screenshot-placeholder">Frontend UI Mockup</div>
+                    <div class="screenshot-placeholder">Backend Dashboard Mockup</div>
+                    <div class="screenshot-placeholder">Mobile View Mockup</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="tech-stack" style="--order: 4;">
+            <div class="container">
+                <h2>Technology Stack</h2>
+                <div class="tech-stack__grid">
+                    <div class="tech-icon">
+                        <div class="icon-placeholder">Re</div>
+                        <span>React.js</span>
+                    </div>
+                    <div class="tech-icon">
+                        <div class="icon-placeholder">No</div>
+                        <span>Node.js</span>
+                    </div>
+                    <div class="tech-icon">
+                        <div class="icon-placeholder">Ex</div>
+                        <span>Express.js</span>
+                    </div>
+                    <div class="tech-icon">
+                        <div class="icon-placeholder">Mo</div>
+                        <span>MongoDB</span>
+                    </div>
+                    <div class="tech-icon">
+                        <div class="icon-placeholder">JW</div>
+                        <span>JWT</span>
+                    </div>
+                    <div class="tech-icon">
+                         <div class="icon-placeholder">Ht</div>
+                        <span>HTML5</span>
+                    </div>
+                     <div class="tech-icon">
+                         <div class="icon-placeholder">Cs</div>
+                        <span>CSS3</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="about" style="--order: 5;">
+            <div class="container">
+                <div class="about-content">
+                    <h2>About The Developer</h2>
+                    <h3>Parash Biswas</h3>
+                    <p>A passionate full-stack developer with a focus on creative design and scalable web apps.</p>
+                    <a href="mailto:porombiswasviki@gmail.com" class="email">porombiswasviki@gmail.com</a>
+                    <div class="social-links">
+                        <a href="https://github.com/Porom143" target="_blank" title="GitHub">GH</a>
+                        <a href="https://www.linkedin.com/in/parash-biswas-905894287" target="_blank" title="LinkedIn">IN</a>
+                        <a href="https://www.facebook.com/share/1B3xfzHTqh/" target="_blank" title="Facebook">FB</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer style="--order: 6;">
+        <div class="container">
+            <p class="footer-name">Parash Biswas</p>
+            <div class="social-links">
+                <a href="https://github.com/Porom143" target="_blank" title="GitHub">GitHub</a>
+                <a href="https://www.linkedin.com/in/parash-biswas-905894287" target="_blank" title="LinkedIn">LinkedIn</a>
+                <a href="https://www.facebook.com/share/1B3xfzHTqh/" target="_blank" title="Facebook">Facebook</a>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
