@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Love Game ❤️</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: black;
+            color: white;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .container {
+            text-align: center;
+            padding: 2rem;
+            max-width: 90%;
+            z-index: 10;
+        }
+
+        h1 {
+            font-family: 'Dancing Script', cursive;
+            color: #ff4d4d;
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+
+        input {
+            padding: 0.8rem 1.2rem;
+            border: 2px solid #ff4d4d;
+            border-radius: 50px;
+            background: transparent;
+            color: white;
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+            width: 250px;
+            text-align: center;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #ff9999;
+            box-shadow: 0 0 10px #ff4d4d;
+        }
+
+        .btn {
+            padding: 0.8rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 0.5rem;
+        }
+
+        .btn-primary {
+            background-color: #ff4d4d;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #ff3333;
+            transform: scale(1.05);
+            box-shadow: 0 0 15px #ff4d4d;
+        }
+
+        .btn-secondary {
+            background-color: #333;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #444;
+            transform: scale(1.05);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .heart {
+            position: absolute;
+            pointer-events: none;
+            opacity: 0.6;
+            z-index: 1;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateY(-100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        #noBtn {
+            position: absolute;
+            transition: all 0.1s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="nameInput">
+            <h1>Love Game ❤️</h1>
+            <p>Enter your name to begin</p>
+            <input type="text" id="userName" placeholder="Your beautiful name">
+            <button class="btn btn-primary" id="startBtn">Start</button>
+        </div>
+
+        <div id="questionContainer" class="hidden">
+            <h1>Hey I'm Parash.</h1>
+            <p id="questionText">Do you love me, <span id="namePlaceholder"></span>?</p>
+            <button class="btn btn-primary" id="yesBtn">Yes</button>
+            <button class="btn btn-secondary" id="noBtn">No</button>
+        </div>
+
+        <div id="responseContainer" class="hidden">
+            <h1 id="responseText"></h1>
+            <button class="btn btn-primary" id="restartBtn">Play Again</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const nameInput = document.getElementById('nameInput');
+            const questionContainer = document.getElementById('questionContainer');
+            const responseContainer = document.getElementById('responseContainer');
+            const userNameInput = document.getElementById('userName');
+            const namePlaceholder = document.getElementById('namePlaceholder');
+            const startBtn = document.getElementById('startBtn');
+            const yesBtn = document.getElementById('yesBtn');
+            const noBtn = document.getElementById('noBtn');
+            const responseText = document.getElementById('responseText');
+            const restartBtn = document.getElementById('restartBtn');
+
+            // Create floating hearts
+            function createHearts() {
+                const heart = document.createElement('div');
+                heart.innerHTML = '❤️';
+                heart.className = 'heart';
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.top = Math.random() * 100 + 'vh';
+                heart.style.fontSize = (Math.random() * 20 + 10) + 'px';
+                heart.style.animationDuration = (Math.random() * 5 + 5) + 's';
+                document.body.appendChild(heart);
+
+                setTimeout(() => {
+                    heart.remove();
+                }, 5000);
+            }
+
+            // Start creating hearts at intervals
+            setInterval(createHearts, 300);
+
+            startBtn.addEventListener('click', function() {
+                const name = userNameInput.value.trim();
+                if (name) {
+                    nameInput.classList.add('hidden');
+                    namePlaceholder.textContent = name;
+                    questionContainer.classList.remove('hidden');
+                } else {
+                    alert('Please enter your name!');
+                }
+            });
+
+            yesBtn.addEventListener('click', function() {
+                const name = userNameInput.value.trim();
+                questionContainer.classList.add('hidden');
+                responseText.textContent = `I love you too, ${name} ❤️`;
+                responseText.style.color = '#ff4d4d';
+                responseContainer.classList.remove('hidden');
+            });
+
+            noBtn.addEventListener('mouseover', function() {
+                moveNoButton();
+            });
+
+            noBtn.addEventListener('click', function() {
+                moveNoButton();
+            });
+
+            function moveNoButton() {
+                const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
+                const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
+                noBtn.style.left = x + 'px';
+                noBtn.style.top = y + 'px';
+            }
+
+            restartBtn.addEventListener('click', function() {
+                responseContainer.classList.add('hidden');
+                nameInput.classList.remove('hidden');
+                userNameInput.value = '';
+            });
+
+            // Allow Enter key to submit name
+            userNameInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    startBtn.click();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
