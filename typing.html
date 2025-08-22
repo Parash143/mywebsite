@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Narail TTC - Typing Tutor</title>
+    <style>
+        /* Base Styles - Reset and Defaults */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #121212; /* Dark mode default */
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            transition: background-color 0.5s ease, color 0.5s ease; /* Smooth mode transition */
+        }
+
+        body.light-mode {
+            background-color: #f0f0f0;
+            color: #121212;
+        }
+
+        /* Header Styles */
+        header {
+            text-align: center;
+            padding: 2rem 1rem;
+            position: relative;
+        }
+
+        .title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: #ff0000;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 10px rgba(255, 0, 0, 0.7);
+            animation: glow 2s infinite alternate, float 3s ease-in-out infinite;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0;
+            animation: fadeIn 1.5s forwards 1s;
+        }
+
+        /* Main Content */
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Sections - Common styles for sections */
+        .section {
+            width: 100%;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            background-color: rgba(30, 30, 30, 0.8);
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease, background-color 0.5s ease; /* Smooth transitions */
+        }
+
+        body.light-mode .section {
+            background-color: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section-title {
+            color: #ff0000;
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* Typing Box - Enhanced with gradients and interactions */
+        .typing-container {
+            width: 100%;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .text-display {
+            background: linear-gradient(135deg, #111, #222); /* Gradient for depth */
+            color: #fff;
+            padding: 1.5rem;
+            border-radius: 8px;
+            font-size: 1.4rem;
+            line-height: 1.6;
+            min-height: 150px;
+            margin-bottom: 1.5rem;
+            border: 1px solid #333;
+            transition: box-shadow 0.3s ease;
+        }
+
+        body.light-mode .text-display {
+            background: linear-gradient(135deg, #eee, #ddd);
+            color: #121212;
+            border: 1px solid #ccc;
+        }
+
+        .text-display:hover {
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+        }
+
+        .text-input {
+            width: 100%;
+            background-color: #222;
+            color: #fff;
+            border: 2px solid #ff0000;
+            border-radius: 8px;
+            padding: 1rem;
+            font-size: 1.2rem;
+            resize: none;
+            outline: none;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        body.light-mode .text-input {
+            background-color: #fff;
+            color: #121212;
+        }
+
+        .text-input:focus {
+            border-color: #ff3333;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+        }
+
+        /* Progress Bar - New addition for typing progress */
+        .progress-bar {
+            height: 5px;
+            background-color: #ff0000;
+            width: 0;
+            transition: width 0.3s ease; /* Smooth animation */
+            border-radius: 5px;
+            margin-top: -10px; /* Position above input */
+        }
+
+        /* Virtual Keyboard - Optimized layout */
+        .keyboard-container {
+            width: 100%;
+            margin-top: 2rem;
+        }
+
+        .keyboard {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            background-color: #222;
+            padding: 1rem;
+            border-radius: 8px;
+            transition: background-color 0.5s ease;
+        }
+
+        body.light-mode .keyboard {
+            background-color: #ddd;
+        }
+
+        .keyboard-row {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .key {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #333;
+            color: #fff;
+            border-radius: 6px;
+            font-weight: bold;
+            user-select: none;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        body.light-mode .key {
+            background-color: #ccc;
+            color: #121212;
+        }
+
+        .key.space {
+            width: 300px;
+        }
+
+        .key.active {
+            background-color: #ff0000;
+            transform: scale(0.95);
+        }
+
+        .key.correct {
+            background-color: #00aa00;
+        }
+
+        .key.incorrect {
+            background-color: #ff0000;
+        }
+
+        /* Results Section - Enhanced with card style */
+        .results-container {
+            text-align: center;
+        }
+
+        .result-card {
+            background: linear-gradient(135deg, #222, #333);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.4);
+            margin: 2rem 0;
+            transition: transform 0.3s ease, background 0.5s ease;
+        }
+
+        body.light-mode .result-card {
+            background: linear-gradient(135deg, #ddd, #eee);
+        }
+
+        .result-card:hover {
+            transform: scale(1.05);
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin: 2rem 0;
+        }
+
+        .stat {
+            background-color: #222;
+            padding: 1.5rem;
+            border-radius: 8px;
+            min-width: 150px;
+            margin: 0.5rem;
+            transition: background-color 0.5s ease;
+        }
+
+        body.light-mode .stat {
+            background-color: #ddd;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            color: #ff0000;
+            font-weight: bold;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .message {
+            font-size: 1.8rem;
+            margin: 1.5rem 0;
+            color: #ff0000;
+            min-height: 2.5rem;
+            opacity: 0;
+            animation: fadeIn 0.5s forwards; /* Animation for messages */
+        }
+
+        .stars {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 1.5rem 0;
+        }
+
+        .star {
+            font-size: 2.5rem;
+            color: #333;
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+
+        body.light-mode .star {
+            color: #ccc;
+        }
+
+        .star.filled {
+            color: #ffcc00;
+            text-shadow: 0 0 10px rgba(255, 204, 0, 0.7);
+            transform: scale(1.2); /* Animation effect */
+        }
+
+        /* Motivational Message - Floating temporary messages */
+        .motivational-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2rem;
+            color: #00ff00;
+            opacity: 0;
+            animation: floatUp 1s ease-out forwards;
+            pointer-events: none;
+        }
+
+        @keyframes floatUp {
+            from {
+                opacity: 1;
+                transform: translate(-50%, -50%);
+            }
+            to {
+                opacity: 0;
+                transform: translate(-50%, -100%);
+            }
+        }
+
+        /* Controls - Glowing buttons */
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #ff0000, #ff3333); /* Gradient */
+            color: #fff;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            font-size: 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-weight: bold;
+            letter-spacing: 1px;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.5); /* Glow */
+        }
+
+        .btn:hover {
+            background: linear-gradient(135deg, #ff3333, #ff6666);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 0, 0, 0.7);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        /* Toggle Buttons - For mode and sound */
+        .toggle-btn {
+            background: none;
+            border: 2px solid #ff0000;
+            color: #ff0000;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-btn:hover {
+            background-color: #ff0000;
+            color: #fff;
+        }
+
+        /* Leaderboard and History Sections */
+        .leaderboard-list, .history-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .leaderboard-item, .history-item {
+            background-color: #333;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            border-radius: 8px;
+            transition: background-color 0.5s ease;
+        }
+
+        body.light-mode .leaderboard-item, body.light-mode .history-item {
+            background-color: #ccc;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 2rem;
+            margin-top: auto;
+            background-color: #111;
+            transition: background-color 0.5s ease;
+        }
+
+        body.light-mode footer {
+            background-color: #ddd;
+        }
+
+        .developer {
+            font-size: 1.2rem;
+            opacity: 0;
+            animation: slideIn 1s forwards 2s;
+        }
+
+        .developer span {
+            color: #ff0000;
+            font-weight: bold;
+        }
+
+        /* Animations - Keyframes for effects */
+        @keyframes glow {
+            from { text-shadow: 0 0 10px rgba(255, 0, 0, 0.7); }
+            to { text-shadow: 0 0 20px rgba(255, 0, 0, 0.9), 0 0 30px rgba(255, 0, 0, 0.5); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive Design - Enhanced for mobile/tablet/desktop */
+        @media (max-width: 1024px) {
+            .keyboard-row { gap: 6px; }
+            .key { width: 40px; height: 40px; font-size: 0.9rem; }
+            .key.space { width: 200px; }
+        }
+
+        @media (max-width: 768px) {
+            .title { font-size: 2.5rem; }
+            .section { padding: 1.5rem; }
+            .text-display { font-size: 1.2rem; }
+            .key { width: 30px; height: 30px; font-size: 0.8rem; }
+            .key.space { width: 150px; }
+            .stats { flex-direction: column; align-items: center; }
+            .stat { width: 100%; max-width: 250px; }
+        }
+
+        @media (max-width: 480px) {
+            .title { font-size: 2rem; }
+            .key { width: 20px; height: 20px; font-size: 0.6rem; }
+            .key.space { width: 100px; }
+            .section { padding: 1rem; }
+            .controls { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1 class="title">Narail TTC</h1>
+        <p class="subtitle">Practice daily, progress steadily.</p>
+        <!-- Mode Toggle Button -->
+        <button id="mode-toggle" class="toggle-btn">Light Mode</button>
+        <!-- Sound Toggle Button -->
+        <button id="sound-toggle" class="toggle-btn">Mute</button>
+    </header>
+
+    <main>
+        <section id="typing-section" class="section visible">
+            <h2 class="section-title">Typing Practice</h2>
+            
+            <div class="typing-container">
+                <div id="text-display" class="text-display">
+                    Click start to begin your typing practice...
+                </div>
+                <div class="progress-bar" id="progress-bar"></div>
+                <textarea
+                    id="text-input"
+                    class="text-input"
+                    placeholder="Start typing here..."
+                    rows="4"
+                    disabled
+                ></textarea>
+                <!-- Motivational Message Container -->
+                <div id="motivational-message" class="motivational-message"></div>
+            </div>
+            
+            <div class="controls">
+                <button id="start-btn" class="btn">Start</button>
+                <button id="restart-btn" class="btn" disabled>Restart</button>
+            </div>
+            
+            <div class="keyboard-container">
+                <div class="keyboard">
+                    <div class="keyboard-row">
+                        <div class="key" data-key="q">Q</div>
+                        <div class="key" data-key="w">W</div>
+                        <div class="key" data-key="e">E</div>
+                        <div class="key" data-key="r">R</div>
+                        <div class="key" data-key="t">T</div>
+                        <div class="key" data-key="y">Y</div>
+                        <div class="key" data-key="u">U</div>
+                        <div class="key" data-key="i">I</div>
+                        <div class="key" data-key="o">O</div>
+                        <div class="key" data-key="p">P</div>
+                    </div>
+                    <div class="keyboard-row">
+                        <div class="key" data-key="a">A</div>
+                        <div class="key" data-key="s">S</div>
+                        <div class="key" data-key="d">D</div>
+                        <div class="key" data-key="f">F</div>
+                        <div class="key" data-key="g">G</div>
+                        <div class="key" data-key="h">H</div>
+                        <div class="key" data-key="j">J</div>
+                        <div class="key" data-key="k">K</div>
+                        <div class="key" data-key="l">L</div>
+                    </div>
+                    <div class="keyboard-row">
+                        <div class="key" data-key="z">Z</div>
+                        <div class="key" data-key="x">X</div>
+                        <div class="key" data-key="c">C</div>
+                        <div class="key" data-key="v">V</div>
+                        <div class="key" data-key="b">B</div>
+                        <div class="key" data-key="n">N</div>
+                        <div class="key" data-key="m">M</div>
+                    </div>
+                    <div class="keyboard-row">
+                        <div class="key space" data-key=" ">Space</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="results-section" class="section">
+            <h2 class="section-title">Typing Results</h2>
+            
+            <div class="results-container">
+                <div class="result-card">
+                    <div class="stats">
+                        <div class="stat">
+                            <div id="wpm" class="stat-value">0</div>
+                            <div class="stat-label">WPM</div>
+                        </div>
+                        <div class="stat">
+                            <div id="accuracy" class="stat-value">0%</div>
+                            <div class="stat-label">Accuracy</div>
+                        </div>
+                        <div class="stat">
+                            <div id="time" class="stat-value">0s</div>
+                            <div class="stat-label">Time</div>
+                        </div>
+                        <div class="stat">
+                            <div id="mistakes" class="stat-value">0</div>
+                            <div class="stat-label">Mistakes</div>
+                        </div>
+                    </div>
+                    
+                    <div id="message" class="message"></div>
+                    
+                    <div class="stars">
+                        <div class="star">★</div>
+                        <div class="star">★</div>
+                        <div class="star">★</div>
+                        <div class="star">★</div>
+                        <div class="star">★</div>
+                    </div>
+                </div>
+                
+                <div class="controls">
+                    <button id="try-again-btn" class="btn">Try Again</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Leaderboard Section -->
+        <section id="leaderboard-section" class="section">
+            <h2 class="section-title">Leaderboard</h2>
+            <ul id="leaderboard-list" class="leaderboard-list"></ul>
+        </section>
+
+        <!-- History Section -->
+        <section id="history-section" class="section">
+            <h2 class="section-title">Your Typing History</h2>
+            <ul id="history-list" class="history-list"></ul>
+        </section>
+    </main>
+    
+    <footer>
+        <div class="developer">© Developed by <span>Parash</span></div>
+    </footer>
+
+    <!-- Audio Elements - For background music and sound effects (use placeholder srcs or replace with actual URLs) -->
+    <audio id="bg-music" loop>
+        <source src="https://example.com/background-music.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="correct-sound">
+        <source src="https://example.com/correct-beep.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="incorrect-sound">
+        <source src="https://example.com/incorrect-beep.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        // Sample texts for typing practice - Array of strings
+        const sampleTexts = [
+            "The quick brown fox jumps over the lazy dog.",
+            "Programming is the process of creating a set of instructions that tell a computer how to perform a task.",
+            "Typing quickly and accurately is an essential skill for programmers and writers alike.",
+            "Practice makes perfect. The more you type, the better you will become at typing.",
+            "Coding is not just about writing code, it is about solving problems and creating solutions.",
+            "The best way to predict the future is to invent it. Start typing now to create your future.",
+            "Every great developer you know got there by solving problems they were unqualified to solve until they actually did it.",
+            "The only way to learn a new programming language is by writing programs in it.",
+            "Success is not the key to happiness. Happiness is the key to success. If you love what you are doing, you will be successful.",
+            "The computer was born to solve problems that did not exist before. Keep typing to create new solutions."
+        ];
+
+        // Motivational messages - Randomly shown on correct typing
+        const motivationalMessages = [
+            "Great job!",
+            "Keep going!",
+            "Excellent speed!",
+            "You're on fire!",
+            "Well done!",
+            "Impressive!"
+        ];
+
+        // DOM Elements - Grouped for clarity
+        const elements = {
+            textDisplay: document.getElementById('text-display'),
+            textInput: document.getElementById('text-input'),
+            progressBar: document.getElementById('progress-bar'),
+            motivationalMessage: document.getElementById('motivational-message'),
+            startBtn: document.getElementById('start-btn'),
+            restartBtn: document.getElementById('restart-btn'),
+            tryAgainBtn: document.getElementById('try-again-btn'),
+            wpmElement: document.getElementById('wpm'),
+            accuracyElement: document.getElementById('accuracy'),
+            timeElement: document.getElementById('time'),
+            mistakesElement: document.getElementById('mistakes'),
+            messageElement: document.getElementById('message'),
+            stars: document.querySelectorAll('.star'),
+            typingSection: document.getElementById('typing-section'),
+            resultsSection: document.getElementById('results-section'),
+            leaderboardSection: document.getElementById('leaderboard-section'),
+            historySection: document.getElementById('history-section'),
+            leaderboardList: document.getElementById('leaderboard-list'),
+            historyList: document.getElementById('history-list'),
+            modeToggle: document.getElementById('mode-toggle'),
+            soundToggle: document.getElementById('sound-toggle'),
+            bgMusic: document.getElementById('bg-music'),
+            correctSound: document.getElementById('correct-sound'),
+            incorrectSound: document.getElementById('incorrect-sound'),
+            allKeys: document.querySelectorAll('.key')
+        };
+
+        // State variables - Centralized for easy management
+        let state = {
+            startTime: null,
+            endTime: null,
+            timerInterval: null,
+            currentText: '',
+            mistakes: 0,
+            correctStreak: 0,
+            isSoundEnabled: true,
+            typingHistory: JSON.parse(localStorage.getItem('typingHistory')) || [],
+            leaderboard: JSON.parse(localStorage.getItem('leaderboard')) || []
+        };
+
+        // Initialize the application - Setup event listeners and load data
+        function init() {
+            // Event listeners for buttons
+            elements.startBtn.addEventListener('click', startTest);
+            elements.restartBtn.addEventListener('click', restartTest);
+            elements.tryAgainBtn.addEventListener('click', tryAgain);
+            elements.textInput.addEventListener('input', handleInput);
+            elements.modeToggle.addEventListener('click', toggleMode);
+            elements.soundToggle.addEventListener('click', toggleSound);
+
+            // Keyboard highlighting
+            document.addEventListener('keydown', handleKeyDown);
+            document.addEventListener('keyup', handleKeyUp);
+
+            // Load and display history and leaderboard
+            updateHistory();
+            updateLeaderboard();
+
+            // Show initial section
+            showSection(elements.typingSection);
+
+            // Play background music if enabled
+            if (state.isSoundEnabled) {
+                elements.bgMusic.play().catch(() => {}); // Handle autoplay restrictions
+            }
+        }
+
+        // Show a specific section with animation - Hides others
+        function showSection(section) {
+            document.querySelectorAll('.section').forEach(sec => sec.classList.remove('visible'));
+            setTimeout(() => section.classList.add('visible'), 50);
+        }
+
+        // Start the typing test - Resets and begins new session
+        function startTest() {
+            state.currentText = sampleTexts[Math.floor(Math.random() * sampleTexts.length)];
+            elements.textDisplay.textContent = state.currentText;
+            elements.textInput.value = '';
+            elements.textInput.disabled = false;
+            elements.textInput.focus();
+            elements.startBtn.disabled = true;
+            elements.restartBtn.disabled = false;
+            state.startTime = new Date();
+            state.timerInterval = setInterval(updateTimer, 1000);
+            state.mistakes = 0;
+            state.correctStreak = 0;
+            elements.progressBar.style.width = '0%';
+            if (state.isSoundEnabled) elements.bgMusic.play();
+        }
+
+        // Restart the test - Clears and restarts
+        function restartTest() {
+            clearInterval(state.timerInterval);
+            startTest();
+        }
+
+        // Try again after results - Shows typing section and restarts
+        function tryAgain() {
+            showSection(elements.typingSection);
+            restartTest();
+        }
+
+        // Update timer display - Calculates elapsed time
+        function updateTimer() {
+            const currentTime = new Date();
+            const elapsedTime = Math.floor((currentTime - state.startTime) / 1000);
+            elements.timeElement.textContent = `${elapsedTime}s`;
+        }
+
+        // Handle user input - Core typing logic
+        function handleInput() {
+            const typedText = elements.textInput.value;
+            const currentLength = typedText.length;
+            let formattedText = '';
+            let localMistakes = 0;
+            let isCorrect = true;
+
+            for (let i = 0; i < state.currentText.length; i++) {
+                if (i < currentLength) {
+                    if (typedText[i] === state.currentText[i]) {
+                        formattedText += `<span style="color: #00ff00">${state.currentText[i]}</span>`;
+                    } else {
+                        formattedText += `<span style="color: #ff0000">${state.currentText[i]}</span>`;
+                        localMistakes++;
+                        isCorrect = false;
+                    }
+                } else {
+                    formattedText += state.currentText[i];
+                }
+            }
+
+            elements.textDisplay.innerHTML = formattedText;
+            state.mistakes = localMistakes;
+
+            // Update progress bar
+            const progress = (currentLength / state.currentText.length) * 100;
+            elements.progressBar.style.width = `${progress}%`;
+
+            // Handle correct/incorrect feedback
+            if (isCorrect) {
+                state.correctStreak++;
+                if (state.correctStreak % 5 === 0 && state.correctStreak > 0) {
+                    showMotivationalMessage();
+                }
+                if (state.isSoundEnabled) elements.correctSound.play();
+            } else {
+                state.correctStreak = 0;
+                if (state.isSoundEnabled) elements.incorrectSound.play();
+            }
+
+            // Finish if complete
+            if (currentLength === state.currentText.length) {
+                finishTest();
+            }
+        }
+
+        // Show temporary motivational message - Random selection
+        function showMotivationalMessage() {
+            const msg = motivationalMessages[Math.floor(Math.random() * motivationalMessages.length)];
+            elements.motivationalMessage.textContent = msg;
+            elements.motivationalMessage.style.animation = 'none';
+            void elements.motivationalMessage.offsetWidth; // Trigger reflow
+            elements.motivationalMessage.style.animation = 'floatUp 1s ease-out forwards';
+        }
+
+        // Finish test - Calculates results, saves, shows results
+        function finishTest() {
+            state.endTime = new Date();
+            clearInterval(state.timerInterval);
+            const timeInSeconds = Math.floor((state.endTime - state.startTime) / 1000);
+            const timeInMinutes = timeInSeconds / 60;
+            const typedWords = elements.textInput.value.split(/\s+/).length;
+            const wpm = Math.round(typedWords / timeInMinutes);
+            const accuracy = Math.round(((state.currentText.length - state.mistakes) / state.currentText.length) * 100);
+
+            // Update display
+            elements.wpmElement.textContent = wpm;
+            elements.accuracyElement.textContent = `${accuracy}%`;
+            elements.timeElement.textContent = `${timeInSeconds}s`;
+            elements.mistakesElement.textContent = state.mistakes;
+
+            setMotivationalMessage(wpm, accuracy);
+            setStarRating(wpm);
+
+            // Save to history and leaderboard
+            const result = { wpm, accuracy, time: timeInSeconds, mistakes: state.mistakes, date: new Date().toLocaleString() };
+            state.typingHistory.push(result);
+            localStorage.setItem('typingHistory', JSON.stringify(state.typingHistory));
+
+            updateLeaderboard(result);
+            updateHistory();
+
+            elements.textInput.disabled = true;
+            if (state.isSoundEnabled) elements.bgMusic.pause();
+            showSection(elements.resultsSection);
+        }
+
+        // Set final motivational message - Based on performance
+        function setMotivationalMessage(wpm, accuracy) {
+            if (wpm < 20) {
+                elements.messageElement.textContent = "Keep practicing! You'll improve with time.";
+            } else if (wpm < 40) {
+                elements.messageElement.textContent = "Good job! You're getting better.";
+            } else {
+                elements.messageElement.textContent = "Excellent typing! You're a pro!";
+            }
+        }
+
+        // Set star rating - Animated fill based on WPM
+        function setStarRating(wpm) {
+            elements.stars.forEach(star => star.classList.remove('filled'));
+            let starCount = 1;
+            if (wpm >= 20) starCount = 3;
+            if (wpm >= 40) starCount = 5;
+            for (let i = 0; i < starCount; i++) {
+                setTimeout(() => elements.stars[i].classList.add('filled'), i * 300);
+            }
+        }
+
+        // Update history display - From localStorage
+        function updateHistory() {
+            elements.historyList.innerHTML = '';
+            state.typingHistory.forEach(entry => {
+                const li = document.createElement('li');
+                li.classList.add('history-item');
+                li.textContent = `WPM: ${entry.wpm}, Accuracy: ${entry.accuracy}%, Time: ${entry.time}s, Mistakes: ${entry.mistakes} - ${entry.date}`;
+                elements.historyList.appendChild(li);
+            });
+            showSection(elements.historySection); // Optionally show, but keep hidden unless button added
+        }
+
+        // Update leaderboard - Top 5 WPM scores
+        function updateLeaderboard(newResult) {
+            if (newResult) {
+                state.leaderboard.push(newResult);
+                state.leaderboard.sort((a, b) => b.wpm - a.wpm);
+                state.leaderboard = state.leaderboard.slice(0, 5); // Top 5
+                localStorage.setItem('leaderboard', JSON.stringify(state.leaderboard));
+            }
+            elements.leaderboardList.innerHTML = '';
+            state.leaderboard.forEach((entry, index) => {
+                const li = document.createElement('li');
+                li.classList.add('leaderboard-item');
+                li.textContent = `#${index + 1} - WPM: ${entry.wpm}, Accuracy: ${entry.accuracy}%, Time: ${entry.time}s, Mistakes: ${entry.mistakes}`;
+                elements.leaderboardList.appendChild(li);
+            });
+            showSection(elements.leaderboardSection); // Optionally show
+        }
+
+        // Toggle dark/light mode - Smooth transition
+        function toggleMode() {
+            document.body.classList.toggle('light-mode');
+            elements.modeToggle.textContent = document.body.classList.contains('light-mode') ? 'Dark Mode' : 'Light Mode';
+        }
+
+        // Toggle sound - Mute/unmute
+        function toggleSound() {
+            state.isSoundEnabled = !state.isSoundEnabled;
+            elements.soundToggle.textContent = state.isSoundEnabled ? 'Mute' : 'Unmute';
+            if (state.isSoundEnabled) {
+                elements.bgMusic.play();
+            } else {
+                elements.bgMusic.pause();
+            }
+        }
+
+        // Handle key down - Highlight virtual key
+        function handleKeyDown(e) {
+            const key = e.key.toLowerCase() === ' ' ? ' ' : e.key.toLowerCase();
+            highlightKey(key, true);
+        }
+
+        // Handle key up - Remove highlight
+        function handleKeyUp(e) {
+            const key = e.key.toLowerCase() === ' ' ? ' ' : e.key.toLowerCase();
+            highlightKey(key, false);
+        }
+
+        // Highlight virtual keyboard key
+        function highlightKey(key, isActive) {
+            const keyElement = key === ' ' ? document.querySelector('.key.space') : document.querySelector(`.key[data-key="${key}"]`);
+            if (keyElement) {
+                if (isActive) {
+                    keyElement.classList.add('active');
+                } else {
+                    keyElement.classList.remove('active');
+                }
+            }
+        }
+
+        // Initialize on DOM load
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
